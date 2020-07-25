@@ -1,6 +1,8 @@
 # grpc-csv-viewer
 Prototype of gRPC service acquiring and serving data from CSV files as JSON formatted values
 
+## CI Status: <a href="https://github.com/toorosan/grpc-csv-viewer"><img alt="grpc-csv-viewer status" src="https://github.com/toorosan/grpc-csv-viewer/workflows/Go/badge.svg"></a> <a href="https://github.com/toorosan/grpc-csv-viewer"><img alt="grpc-csv-viewer status" src="https://github.com/toorosan/grpc-csv-viewer/workflows/golangci-lint/badge.svg"></a>
+
 ## Requirements:
 - Monorepo should contain the following components:
 - gRPC server, serving time-based numeric data from CSV files as TimeSeries.
