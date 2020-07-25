@@ -1,17 +1,18 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <HelloWorld/>
+<!--    <img src="./assets/logo.png">-->
+    <IndexPage/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
+import IndexPage from "./components/Index";
+// import HelloWorld from './components/HelloWorld'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    IndexPage,
   }
 }
 </script>
