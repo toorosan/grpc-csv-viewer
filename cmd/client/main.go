@@ -1,54 +1,16 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
-	"net/http"
-	"time"
 
-	"grpc-csv-viewer/internal/app/roles/client"
+	"grpc-csv-viewer/internal/app/roles/client/rest"
+
+	"github.com/pkg/errors"
 )
 
-func uiHandler(w http.ResponseWriter, _ *http.Request) {
-	_, err := fmt.Fprintf(w, "Hi there, I am future ui handler!")
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func timeSeriesHandler(w http.ResponseWriter, _ *http.Request) {
-	mockTimeSeries := client.TimeSeries{
-		FileName:  "mocked-values.csv",
-		StartDate: time.Now().Add(-time.Hour * 3),
-		StopDate:  time.Now(),
-		Values: []client.SeriesItem{
-			{
-				Date:  time.Now().Add(-time.Hour * 3),
-				Value: 1,
-			},
-			{
-				Date:  time.Now().Add(-time.Hour * 2),
-				Value: 2,
-			},
-			{
-				Date:  time.Now().Add(-time.Hour * 1),
-				Value: 4,
-			},
-			{
-				Date:  time.Now(),
-				Value: 1,
-			},
-		},
-	}
-	err := json.NewEncoder(w).Encode(mockTimeSeries)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func main() {
-	http.HandleFunc("/api/v1/timeseries", timeSeriesHandler)
-	http.HandleFunc("/", uiHandler)
-	log.Fatal(http.ListenAndServe(":8081", nil))
+	err := rest.ListenAndServeREST()
+	if err != nil {
+		log.Fatal(errors.Wrap(err,"failed to listen and serve REST"))
+	}
 }
