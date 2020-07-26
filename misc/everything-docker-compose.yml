@@ -1,9 +1,5 @@
 version: '3'
 services:
-  dockerhost:
-    image: alpine
-    entrypoint: /bin/sh -c "tail -f /dev/null"
-    network_mode: host
   ui:
     build:
       context: ../internal/app/roles/client/ui
@@ -19,7 +15,8 @@ services:
   proxy:
     image: nginx:alpine
     links:
-      - dockerhost:dockerhost
+      - client:client
+      - ui:ui
     ports:
       - "8888:80"
     volumes:

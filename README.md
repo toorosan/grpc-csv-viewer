@@ -7,10 +7,12 @@ Prototype of gRPC service acquiring and serving data from CSV files as JSON form
 #### Requirements: cmake + docker + docker-compose.
 #### Run everything in docker containers:
   ```make run-everything```
-- Everything is working behing nginx on http://127.0.0.1:8888
+- All components are working behing nginx on http://127.0.0.1:8888
 - Pure WEB UI is running on http://127.0.0.1:8080
 - gRPC Client is running on http://127.0.0.1:8081
 - gRPC Server: TBD
+#### Run with force rebuild docker images (convenient method after source files were updated):
+  ```make run-everything-rebuilt```
 
 ## Project Requirements:
 - Monorepo should contain the following components:
