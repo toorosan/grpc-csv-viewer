@@ -36,7 +36,7 @@
       },
       requestData () {
         this.resetState()
-        axios.get(`/api/timeseries`)
+        axios.get(`/api/v1/timeseries`)
           .then(response => {
             console.log(response.data)
             this.values = response.data.values.map(value => value.value)
