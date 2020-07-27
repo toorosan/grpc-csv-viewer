@@ -4,7 +4,7 @@
 // 	protoc        v3.12.3
 // source: csv_viewer.proto
 
-package csv_viewer
+package csvviewer
 
 import (
 	"context"
@@ -76,6 +76,7 @@ func (x *FileQuery) GetFileName() string {
 	if x != nil {
 		return x.FileName
 	}
+
 	return ""
 }
 

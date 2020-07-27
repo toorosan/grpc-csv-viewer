@@ -10,6 +10,6 @@ import (
 func main() {
 	err := rest.ListenAndServeREST()
 	if err != nil {
-		logger.Fatal(errors.Wrap(err,"failed to listen and serve REST").Error())
+		logger.Fatal(errors.Wrap(err, "failed to listen and serve REST").Error())
 	}
 }

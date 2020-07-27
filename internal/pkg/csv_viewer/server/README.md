@@ -1,1 +1,0 @@
-# Package to simplify gathering datasources from CSV.

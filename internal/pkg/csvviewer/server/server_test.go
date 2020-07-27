@@ -4,14 +4,14 @@ import (
 	"context"
 	"testing"
 
-	"grpc-csv-viewer/internal/pkg/csv_viewer"
+	"grpc-csv-viewer/internal/pkg/csvviewer"
 )
 
 func TestNewCSVServerNoConfig(t *testing.T) {
 	// given
 	// no option flags were passed
 	// when
-	s := NewCSVServer("")
+	s := NewCSVServer("").(*csvServer)
 
 	// then
 	if len(s.availableCSVFiles) != 1 {
@@ -48,7 +48,7 @@ func TestNewCSVServerNoConfig(t *testing.T) {
 
 	// when
 	// request existing file details
-	fileDetails, err := s.GetFileDetails(context.Background(), &csv_viewer.FileQuery{})
+	fileDetails, err := s.GetFileDetails(context.Background(), &csvviewer.FileQuery{})
 	if err != nil {
 		t.Fatalf("failed to query file details for default file, got: %v", err)
 	}
@@ -58,7 +58,7 @@ func TestNewCSVServerNoConfig(t *testing.T) {
 
 	// when
 	// request non-existing file details
-	fileDetails, err = s.GetFileDetails(context.Background(), &csv_viewer.FileQuery{FileName: "some-non-exising-file"})
+	fileDetails, err = s.GetFileDetails(context.Background(), &csvviewer.FileQuery{FileName: "some-non-existing-file"})
 	if err != nil {
 		t.Fatalf("failed to query non-existing file details, got: %v", err)
 	}
@@ -72,7 +72,7 @@ func TestNewCSVServerConfiguredRealCSVFiles(t *testing.T) {
 	expectedFileName := "3.csv"
 	cvsFilesPath := "./test_data"
 	// when
-	s := NewCSVServer(cvsFilesPath)
+	s := NewCSVServer(cvsFilesPath).(*csvServer)
 
 	// then
 	if len(s.availableCSVFiles) != 1 {
@@ -102,17 +102,17 @@ func TestNewCSVServerConfiguredRealCSVFiles(t *testing.T) {
 
 	// when
 	// request existing file details
-	fileDetails, err := s.GetFileDetails(context.Background(), &csv_viewer.FileQuery{})
+	fileDetails, err := s.GetFileDetails(context.Background(), &csvviewer.FileQuery{})
 	if err != nil {
 		t.Fatalf("failed to query file details for default file, got: %v", err)
 	}
-	if fileDetails.FileName != expectedFileName {
+	if fileDetails.GetFileName() != expectedFileName {
 		t.Fatal("failed to validate default returned file is the default real one in case if no other files are configured")
 	}
 
 	// when
 	// request non-existing file details
-	fileDetails, err = s.GetFileDetails(context.Background(), &csv_viewer.FileQuery{FileName: "some-non-exising-file"})
+	fileDetails, err = s.GetFileDetails(context.Background(), &csvviewer.FileQuery{FileName: "some-non-existing-file"})
 	if err != nil {
 		t.Fatalf("failed to query non-existing file details, got: %v", err)
 	}

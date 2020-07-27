@@ -8,6 +8,7 @@ import (
 // LoggingLevel type used in logging level configuration and filtration.
 type LoggingLevel string
 
+// Known logging levels (except of "invalid level" defined to catch errors in logging level configuration).
 const (
 	LevelInvalid LoggingLevel = "invalid level"
 	LevelDebug   LoggingLevel = "debug"
