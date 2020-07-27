@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+option go_package = "github.com/toorosan/grpc-csv-viewer/internal/pkg/csv_viewer";
+option java_multiple_files = true;
+option java_package = "io.toorosan.grpc.csvviewer";
+option java_outer_classname = "CSVViewerProto";
+
+package csv_viewer;
+
+service CSVViewer {
+  // Obtains the Values from CSV file by name within the given TimeRange.  Results are
+  // streamed rather than returned at once (e.g. in a response message with a
+  // repeated field), as the time range may cover a huge time frame and contain a
+  // huge number of values.
+  rpc ListValues(Filter) returns (stream Value) {}
+
+  // Obtains FileDetails for the file by FileQuery.
+  rpc GetFileDetails(FileQuery) returns (FileDetails) {}
+}
+
+// FileQuery is a message with file identifiers to get details about CSV file from server.
+message FileQuery {
+  // The name of the CSV file.
+  string fileName = 1;
+}
+
+// FileDetails is a message sent to get CSV file details.
+message FileDetails {
+  // The name of the CSV file.
+  string fileName = 1;
+
+  // The earliest date available in the original values list.
+  int64 startDate = 2;
+
+  // The latest date available in the original values list.
+  int64 stopDate = 3;
+}
+
+// TimeRange is a message sent to get time series values.
+message Filter {
+  // The name of CSV file.
+  string fileName = 1;
+
+  // The start date of the interval for values gathering.
+  int64 startDate = 2;
+
+  // The stop date of the interval for values gathering.
+  int64 stopDate = 3;
+}
+
+// Value is a message sent in response for TimeSeries.
+message Value {
+  // The certain date when value was gathered.
+  int64 date = 1;
+
+  // The gathered value.
+  double value = 2;
+}
