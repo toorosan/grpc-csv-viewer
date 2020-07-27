@@ -13,9 +13,14 @@ const (
 	mockedCSVFileName = "fake-mocked-values.csv"
 )
 
+var mockedValuesCache []*csv_viewer.Value
+
 func mockValues(fileName string) []*csv_viewer.Value {
 	switch fileName {
 	case mockedCSVFileName:
+		if mockedValuesCache != nil {
+			return mockedValuesCache
+		}
 		values := []float64{
 			11.0, 16.0, 27.0, 40.0, 46.0, 21.0, 40.0, 28.0, 5.0, 62,
 			52.0, 28.0, 46.0, 78.0, 1.0, 63.0, 15.0, 81.0, 9.0, 57,
@@ -122,10 +127,11 @@ func mockValues(fileName string) []*csv_viewer.Value {
 		result := make([]*csv_viewer.Value, len(values))
 		for i := range result {
 			result[i] = &csv_viewer.Value{
-				Date:  time.Now().Add(-1000 + time.Minute*time.Duration(i)).UnixNano(),
+				Date:  time.Now().Add(-1000 + time.Minute*time.Duration(i)).Unix(),
 				Value: values[i],
 			}
 		}
+		mockedValuesCache = result
 
 		return result
 	default: // case for unknown file.
