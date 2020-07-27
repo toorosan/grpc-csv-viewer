@@ -1,11 +1,14 @@
-package csv_reader
+package csvreader
 
 import (
 	"encoding/csv"
 	"io"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
+
+	"grpc-csv-viewer/internal/pkg/logger"
 
 	"github.com/pkg/errors"
 )
@@ -19,8 +22,10 @@ type ParsedCSVFile struct {
 	TimeSeries []TimeSeriesItem
 }
 
+// EqualTo allows to check whether passed parsed CSV file is equal to ours or not.
+// Returns error with basic diff details or nil if objects are identical.
 func (pcf *ParsedCSVFile) EqualTo(other *ParsedCSVFile, valueCheckPredicate FloatEqualityFunc) error {
-	if pcf.ColumnNames.Value != other.ColumnNames.Value || pcf.ColumnNames.Date != pcf.ColumnNames.Date {
+	if pcf.ColumnNames.Value != other.ColumnNames.Value || pcf.ColumnNames.Date != other.ColumnNames.Date {
 		return errors.New("column names are not equal")
 	}
 	if len(pcf.TimeSeries) != len(other.TimeSeries) {
@@ -53,10 +58,16 @@ func ReadTimeSeriesFromCSV(fileName string) (ParsedCSVFile, error) {
 	fail := func(e error) (ParsedCSVFile, error) {
 		return ParsedCSVFile{}, e
 	}
-	csvFile, err := os.Open(fileName)
+	csvFile, err := os.Open(filepath.Clean(fileName))
 	if err != nil {
 		return fail(errors.Wrapf(err, "failed to open csv file %q", fileName))
 	}
+	defer func() {
+		err = csvFile.Close()
+		if err != nil {
+			logger.Error(errors.Wrapf(err, "failed to close file %q", fileName).Error())
+		}
+	}()
 
 	// Parse the file
 	r := csv.NewReader(csvFile)

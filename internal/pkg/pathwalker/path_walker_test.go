@@ -1,4 +1,4 @@
-package path_walker
+package pathwalker
 
 import (
 	"testing"
@@ -12,14 +12,14 @@ func TestListFilesInDir(t *testing.T) {
 		".txt",
 		".csv",
 		".xyz",
-		"go",
+		"gov",
 	}
 
 	expectedFiles := []FileList{
 		{
 			"1.csv",
 			"2.csv",
-			"3.go",
+			"3.gov",
 			"4.xls",
 			"5.txt",
 		},

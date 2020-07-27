@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net"
 
-	pb "grpc-csv-viewer/internal/pkg/csv_viewer"
-	"grpc-csv-viewer/internal/pkg/csv_viewer/server"
+	pb "grpc-csv-viewer/internal/pkg/csvviewer"
+	"grpc-csv-viewer/internal/pkg/csvviewer/server"
 	"grpc-csv-viewer/internal/pkg/logger"
 
 	"github.com/pkg/errors"

@@ -1,4 +1,4 @@
-package path_walker
+package pathwalker
 
 import (
 	"os"
@@ -8,8 +8,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+// FileList extends list of strings with handy methods to allow check if two lists are equal or not.
 type FileList []string
 
+// EqualTo allows to check whether passed File List is equal to ours or not.
+// Returns error with basic diff details or nil if lists are identical.
 func (fl FileList) EqualTo(other FileList) error {
 	if len(fl) != len(other) {
 		return errors.Errorf("size of arrays is different: expected %d, got %d", len(fl), len(other))

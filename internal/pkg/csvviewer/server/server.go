@@ -4,21 +4,21 @@ import (
 	"context"
 	"path/filepath"
 
-	"grpc-csv-viewer/internal/pkg/csv_reader"
-	"grpc-csv-viewer/internal/pkg/csv_viewer"
+	"grpc-csv-viewer/internal/pkg/csvreader"
+	"grpc-csv-viewer/internal/pkg/csvviewer"
 	"grpc-csv-viewer/internal/pkg/logger"
-	"grpc-csv-viewer/internal/pkg/path_walker"
+	"grpc-csv-viewer/internal/pkg/pathwalker"
 
 	"github.com/pkg/errors"
 )
 
 // NewCSVServer creates new CSV viewer gRPC server.
-func NewCSVServer(csvFilesPath string) *csvServer {
+func NewCSVServer(csvFilesPath string) csvviewer.CSVViewerServer {
 	s := &csvServer{
 		csvFilesPath: csvFilesPath,
 	}
 	if s.csvPathIsSet() {
-		csvFiles, err := path_walker.ListFilesInDir(s.csvFilesPath, ".csv")
+		csvFiles, err := pathwalker.ListFilesInDir(s.csvFilesPath, ".csv")
 		if err != nil {
 			logger.Fatalf(errors.Wrapf(err, "failed to list files in directory %q", s.csvFilesPath).Error())
 		}
@@ -50,13 +50,13 @@ func NewCSVServer(csvFilesPath string) *csvServer {
 }
 
 type fileDetailsWithTimeSeries struct {
-	*csv_viewer.FileDetails
+	*csvviewer.FileDetails
 
 	// Values are loaded for now at the service initialization, aka eager initialization.
 	// provides better performance on small amounts of data, but requires a lot of memory.
 	// Consider using lazy initialization and even access to the dataset by cursor
 	// if bigger files are required to be processed.
-	values []*csv_viewer.Value
+	values []*csvviewer.Value
 }
 
 type csvServer struct {
@@ -65,9 +65,9 @@ type csvServer struct {
 	defaultFileName   string
 }
 
-func (s *csvServer) ListValues(filter *csv_viewer.Filter, stream csv_viewer.CSVViewer_ListValuesServer) error {
+func (s *csvServer) ListValues(filter *csvviewer.Filter, stream csvviewer.CSVViewer_ListValuesServer) error {
 	if filter == nil {
-		filter = &csv_viewer.Filter{}
+		filter = &csvviewer.Filter{}
 	}
 	if filter.FileName == "" {
 		filter.FileName = s.defaultFileName
@@ -90,13 +90,13 @@ func (s *csvServer) ListValues(filter *csv_viewer.Filter, stream csv_viewer.CSVV
 	return nil
 }
 
-func (s *csvServer) GetFileDetails(ctx context.Context, query *csv_viewer.FileQuery) (*csv_viewer.FileDetails, error) {
-	if query.FileName == "" {
+func (s *csvServer) GetFileDetails(ctx context.Context, query *csvviewer.FileQuery) (*csvviewer.FileDetails, error) {
+	if query.GetFileName() == "" {
 		return s.availableCSVFiles[s.defaultFileName].FileDetails, nil
 	}
 
-	if s.availableCSVFiles[query.FileName] != nil {
-		return s.availableCSVFiles[query.FileName].FileDetails, nil
+	if s.availableCSVFiles[query.GetFileName()] != nil {
+		return s.availableCSVFiles[query.GetFileName()].FileDetails, nil
 	}
 
 	return nil, nil
@@ -106,7 +106,7 @@ func (s *csvServer) csvPathIsSet() bool {
 	return s.csvFilesPath != ""
 }
 
-func (s *csvServer) csvValuesFromFile(fileName string) []*csv_viewer.Value {
+func (s *csvServer) csvValuesFromFile(fileName string) []*csvviewer.Value {
 	if s.availableCSVFiles[fileName] != nil {
 		return s.availableCSVFiles[fileName].values
 	}
@@ -114,13 +114,13 @@ func (s *csvServer) csvValuesFromFile(fileName string) []*csv_viewer.Value {
 	return nil
 }
 
-func inRange(value *csv_viewer.Value, filter *csv_viewer.Filter) bool {
+func inRange(value *csvviewer.Value, filter *csvviewer.Filter) bool {
 	return value.Date < filter.StopDate && value.Date > filter.StartDate
 }
 
 func (s *csvServer) gatherFileDetails(baseFileName string) (*fileDetailsWithTimeSeries, error) {
 	fd := fileDetailsWithTimeSeries{
-		FileDetails: &csv_viewer.FileDetails{
+		FileDetails: &csvviewer.FileDetails{
 			FileName:  baseFileName,
 			StartDate: 9999999999,
 			StopDate:  -1,
@@ -130,12 +130,12 @@ func (s *csvServer) gatherFileDetails(baseFileName string) (*fileDetailsWithTime
 		fd.FileName = mockedCSVFileName
 		fd.values = mockValues(mockedCSVFileName)
 	} else {
-		vv, err := csv_reader.ReadTimeSeriesFromCSV(filepath.Join(s.csvFilesPath, baseFileName))
+		vv, err := csvreader.ReadTimeSeriesFromCSV(filepath.Join(s.csvFilesPath, baseFileName))
 		if err != nil {
-			logger.Fatalf(errors.Wrapf(err, "failed to process file %q: ", baseFileName).Error())
+			return nil, errors.Wrapf(err, "failed to process file %q: ", baseFileName)
 		}
 		for i := range vv.TimeSeries {
-			fd.values = append(fd.values, &csv_viewer.Value{Date: vv.TimeSeries[i].Date.Unix(), Value: vv.TimeSeries[i].Value})
+			fd.values = append(fd.values, &csvviewer.Value{Date: vv.TimeSeries[i].Date.Unix(), Value: vv.TimeSeries[i].Value})
 		}
 	}
 	for _, v := range fd.values {

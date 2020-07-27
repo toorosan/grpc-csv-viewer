@@ -1,4 +1,4 @@
-package csv_reader
+package csvreader
 
 import (
 	"math"

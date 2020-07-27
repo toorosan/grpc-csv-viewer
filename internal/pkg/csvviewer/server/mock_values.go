@@ -6,16 +6,16 @@ import (
 	"math"
 	"time"
 
-	"grpc-csv-viewer/internal/pkg/csv_viewer"
+	"grpc-csv-viewer/internal/pkg/csvviewer"
 )
 
 const (
 	mockedCSVFileName = "fake-mocked-values.csv"
 )
 
-var mockedValuesCache []*csv_viewer.Value
+var mockedValuesCache []*csvviewer.Value
 
-func mockValues(fileName string) []*csv_viewer.Value {
+func mockValues(fileName string) []*csvviewer.Value {
 	switch fileName {
 	case mockedCSVFileName:
 		if mockedValuesCache != nil {
@@ -124,9 +124,9 @@ func mockValues(fileName string) []*csv_viewer.Value {
 			79.0, 91.0, 51.0, 35.0, 35.0, 78.0, 78.0, 51.0, 50.0, 23,
 		}
 
-		result := make([]*csv_viewer.Value, len(values))
+		result := make([]*csvviewer.Value, len(values))
 		for i := range result {
-			result[i] = &csv_viewer.Value{
+			result[i] = &csvviewer.Value{
 				Date:  time.Now().Add(-1000 + time.Minute*time.Duration(i)).Unix(),
 				Value: values[i],
 			}
@@ -135,7 +135,6 @@ func mockValues(fileName string) []*csv_viewer.Value {
 
 		return result
 	default: // case for unknown file.
-		return []*csv_viewer.Value{}
+		return []*csvviewer.Value{}
 	}
-
 }
