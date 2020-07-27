@@ -2,11 +2,11 @@ package server
 
 import (
 	"context"
-	"log"
 	"path/filepath"
 
 	"grpc-csv-viewer/internal/pkg/csv_reader"
 	"grpc-csv-viewer/internal/pkg/csv_viewer"
+	"grpc-csv-viewer/internal/pkg/logger"
 	"grpc-csv-viewer/internal/pkg/path_walker"
 
 	"github.com/pkg/errors"
@@ -20,16 +20,16 @@ func NewCSVServer(csvFilesPath string) *csvServer {
 	if s.csvPathIsSet() {
 		csvFiles, err := path_walker.ListFilesInDir(s.csvFilesPath, ".csv")
 		if err != nil {
-			log.Fatalf(errors.Wrapf(err, "failed to list files in directory %q", s.csvFilesPath).Error())
+			logger.Fatalf(errors.Wrapf(err, "failed to list files in directory %q", s.csvFilesPath).Error())
 		}
 		if len(csvFiles) == 0 {
-			log.Fatalf("failed to initialize server: no suitable csv files found in directory %q", s.csvFilesPath)
+			logger.Fatalf("failed to initialize server: no suitable csv files found in directory %q", s.csvFilesPath)
 		}
 		s.defaultFileName = csvFiles[0]
 		for _, f := range csvFiles {
 			fd, err := s.gatherFileDetails(f)
 			if err != nil {
-				log.Fatalf(errors.Wrapf(err, "failed to gather file %q details", f).Error())
+				logger.Fatalf(errors.Wrapf(err, "failed to gather file %q details", f).Error())
 			}
 			s.availableCSVFiles = map[string]*fileDetailsWithTimeSeries{
 				fd.FileName: fd,
@@ -39,7 +39,7 @@ func NewCSVServer(csvFilesPath string) *csvServer {
 		s.defaultFileName = mockedCSVFileName
 		fd, err := s.gatherFileDetails("")
 		if err != nil {
-			log.Fatalf(errors.Wrapf(err, "failed to gather file %q details", mockedCSVFileName).Error())
+			logger.Fatalf(errors.Wrapf(err, "failed to gather file %q details", mockedCSVFileName).Error())
 		}
 		s.availableCSVFiles = map[string]*fileDetailsWithTimeSeries{
 			mockedCSVFileName: fd,
@@ -132,7 +132,7 @@ func (s *csvServer) gatherFileDetails(baseFileName string) (*fileDetailsWithTime
 	} else {
 		vv, err := csv_reader.ReadTimeSeriesFromCSV(filepath.Join(s.csvFilesPath, baseFileName))
 		if err != nil {
-			log.Fatalf(errors.Wrapf(err, "failed to process file %q: ", baseFileName).Error())
+			logger.Fatalf(errors.Wrapf(err, "failed to process file %q: ", baseFileName).Error())
 		}
 		for i := range vv.TimeSeries {
 			fd.values = append(fd.values, &csv_viewer.Value{Date: vv.TimeSeries[i].Date.Unix(), Value: vv.TimeSeries[i].Value})
