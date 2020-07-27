@@ -10,7 +10,8 @@ Prototype of gRPC service acquiring and serving data from CSV files as JSON form
 - All components are working behing nginx on http://127.0.0.1:8888
 - Pure WEB UI is running on http://127.0.0.1:8080
 - gRPC Client is running on http://127.0.0.1:8081
-- gRPC Server: TBD
+- gRPC Server is running on http://127.0.0.1:8082
+
 #### Run with force rebuild docker images (convenient method after source files were updated):
   ```make run-everything-rebuilt```
 
