@@ -1,5 +1,36 @@
 package main
 
+import (
+	"flag"
+	"fmt"
+	"log"
+	"net"
+
+	pb "grpc-csv-viewer/internal/pkg/csv_viewer"
+	"grpc-csv-viewer/internal/pkg/csv_viewer/server"
+
+	"github.com/pkg/errors"
+	"google.golang.org/grpc"
+)
+
 func main() {
-	print("gRPC server initiated, more content coming soon")
+	var (
+		csvFilesPath = flag.String("csv_files_path", "", "A path to the CSV files with TimeSeries.")
+		port       = flag.Int("port", 10000, "The server port")
+	)
+	flag.Parse()
+
+	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", *port))
+	if err != nil {
+		log.Fatalf(errors.Wrapf(err, "failed to start listeninig gRPC requests on port %d", port).Error())
+	}
+
+	var opts []grpc.ServerOption
+	grpcServer := grpc.NewServer(opts...)
+	pb.RegisterCSVViewerServer(grpcServer, server.NewCSVServer(*csvFilesPath))
+
+	err = grpcServer.Serve(lis)
+	if err != nil {
+		log.Fatal(errors.Wrap(err, "failed to start serving gRPC requests").Error())
+	}
 }
