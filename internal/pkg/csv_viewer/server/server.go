@@ -2,9 +2,10 @@ package server
 
 import (
 	"context"
-	"flag"
 	"log"
+	"path/filepath"
 
+	"grpc-csv-viewer/internal/pkg/csv_reader"
 	"grpc-csv-viewer/internal/pkg/csv_viewer"
 	"grpc-csv-viewer/internal/pkg/path_walker"
 
@@ -12,41 +13,35 @@ import (
 )
 
 // NewCSVServer creates new CSV viewer gRPC server.
-func NewCSVServer() *csvServer {
-	var (
-		csvFilesPath = flag.String("csv_files_path", "", "A path to the CSV files with TimeSeries.")
-		port         = flag.Int("port", 10000, "The server port")
-	)
-	flag.Parse()
+func NewCSVServer(csvFilesPath string) *csvServer {
 	s := &csvServer{
-		csvFilesPath: *csvFilesPath,
-		port:         *port,
+		csvFilesPath: csvFilesPath,
 	}
 	if s.csvPathIsSet() {
-		csvFiles, err := path_walker.ListFilesInDir(*csvFilesPath, ".csv")
+		csvFiles, err := path_walker.ListFilesInDir(s.csvFilesPath, ".csv")
 		if err != nil {
-			log.Fatalf(errors.Wrapf(err, "failed to list files in directory %q", *csvFilesPath).Error())
+			log.Fatalf(errors.Wrapf(err, "failed to list files in directory %q", s.csvFilesPath).Error())
 		}
 		if len(csvFiles) == 0 {
-			log.Fatalf("failed to initialize server: no suitable csv files found in directory %q", csvFilesPath)
+			log.Fatalf("failed to initialize server: no suitable csv files found in directory %q", s.csvFilesPath)
 		}
 		s.defaultFileName = csvFiles[0]
 		for _, f := range csvFiles {
-			fd, err := gatherFileDetails(f)
+			fd, err := s.gatherFileDetails(f)
 			if err != nil {
-				log.Fatalf(errors.Wrapf(err, "failed to gather file %q details", mockedCSVFileName).Error())
+				log.Fatalf(errors.Wrapf(err, "failed to gather file %q details", f).Error())
 			}
-			s.availableCSVFiles = map[string]*csv_viewer.FileDetails{
-				mockedCSVFileName: fd,
+			s.availableCSVFiles = map[string]*fileDetailsWithTimeSeries{
+				fd.FileName: fd,
 			}
 		}
 	} else {
 		s.defaultFileName = mockedCSVFileName
-		fd, err := gatherFileDetails("")
+		fd, err := s.gatherFileDetails("")
 		if err != nil {
 			log.Fatalf(errors.Wrapf(err, "failed to gather file %q details", mockedCSVFileName).Error())
 		}
-		s.availableCSVFiles = map[string]*csv_viewer.FileDetails{
+		s.availableCSVFiles = map[string]*fileDetailsWithTimeSeries{
 			mockedCSVFileName: fd,
 		}
 	}
@@ -54,15 +49,20 @@ func NewCSVServer() *csvServer {
 	return s
 }
 
-type csvServer struct {
-	availableCSVFiles map[string]*csv_viewer.FileDetails
-	defaultFileName   string
-	port              int
-	csvFilesPath      string
+type fileDetailsWithTimeSeries struct {
+	*csv_viewer.FileDetails
+
+	// Values are loaded for now at the service initialization, aka eager initialization.
+	// provides better performance on small amounts of data, but requires a lot of memory.
+	// Consider using lazy initialization and even access to the dataset by cursor
+	// if bigger files are required to be processed.
+	values []*csv_viewer.Value
 }
 
-func (s *csvServer) csvPathIsSet() bool {
-	return s.csvFilesPath != ""
+type csvServer struct {
+	availableCSVFiles map[string]*fileDetailsWithTimeSeries
+	csvFilesPath      string
+	defaultFileName   string
 }
 
 func (s *csvServer) ListValues(filter *csv_viewer.Filter, stream csv_viewer.CSVViewer_ListValuesServer) error {
@@ -91,39 +91,60 @@ func (s *csvServer) ListValues(filter *csv_viewer.Filter, stream csv_viewer.CSVV
 }
 
 func (s *csvServer) GetFileDetails(ctx context.Context, query *csv_viewer.FileQuery) (*csv_viewer.FileDetails, error) {
-	if query.FileName != "" {
-		return s.availableCSVFiles[query.FileName], nil
-	} else {
-		return s.availableCSVFiles[s.defaultFileName], nil
+	if query.FileName == "" {
+		return s.availableCSVFiles[s.defaultFileName].FileDetails, nil
 	}
+
+	if s.availableCSVFiles[query.FileName] != nil {
+		return s.availableCSVFiles[query.FileName].FileDetails, nil
+	}
+
+	return nil, nil
+}
+
+func (s *csvServer) csvPathIsSet() bool {
+	return s.csvFilesPath != ""
 }
 
 func (s *csvServer) csvValuesFromFile(fileName string) []*csv_viewer.Value {
-	return mockValues(fileName)
+	if s.availableCSVFiles[fileName] != nil {
+		return s.availableCSVFiles[fileName].values
+	}
+
+	return nil
 }
 
 func inRange(value *csv_viewer.Value, filter *csv_viewer.Filter) bool {
 	return value.Date < filter.StopDate && value.Date > filter.StartDate
 }
 
-func gatherFileDetails(fileName string) (*csv_viewer.FileDetails, error) {
-	fd := csv_viewer.FileDetails{
-		FileName:  fileName,
-		StartDate: 99999999,
-		StopDate:  -1,
+func (s *csvServer) gatherFileDetails(baseFileName string) (*fileDetailsWithTimeSeries, error) {
+	fd := fileDetailsWithTimeSeries{
+		FileDetails: &csv_viewer.FileDetails{
+			FileName:  baseFileName,
+			StartDate: 9999999999,
+			StopDate:  -1,
+		},
 	}
-	if fileName == "" {
-		vv := mockValues(mockedCSVFileName)
-		for _, v := range vv {
-			if v.Date > fd.StopDate {
-				fd.StopDate = v.Date
-			}
-			if v.Date < fd.StartDate {
-				fd.StartDate = v.Date
-			}
-		}
+	if baseFileName == "" {
+		fd.FileName = mockedCSVFileName
+		fd.values = mockValues(mockedCSVFileName)
 	} else {
-		log.Fatalf("failed to process file %q: only mocked values currently supported", fileName)
+		vv, err := csv_reader.ReadTimeSeriesFromCSV(filepath.Join(s.csvFilesPath, baseFileName))
+		if err != nil {
+			log.Fatalf(errors.Wrapf(err, "failed to process file %q: ", baseFileName).Error())
+		}
+		for i := range vv.TimeSeries {
+			fd.values = append(fd.values, &csv_viewer.Value{Date: vv.TimeSeries[i].Date.Unix(), Value: vv.TimeSeries[i].Value})
+		}
+	}
+	for _, v := range fd.values {
+		if v.Date > fd.StopDate {
+			fd.StopDate = v.Date
+		}
+		if v.Date < fd.StartDate {
+			fd.StartDate = v.Date
+		}
 	}
 
 	return &fd, nil
