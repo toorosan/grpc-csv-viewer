@@ -17,18 +17,18 @@ func TestListFilesInDir(t *testing.T) {
 
 	expectedFiles := []FileList{
 		{
-			"test_data/1.csv",
-			"test_data/2.csv",
-			"test_data/3.go",
-			"test_data/4.xls",
-			"test_data/5.txt",
+			"1.csv",
+			"2.csv",
+			"3.go",
+			"4.xls",
+			"5.txt",
 		},
 		{
-			"test_data/5.txt",
+			"5.txt",
 		},
 		{
-			"test_data/1.csv",
-			"test_data/2.csv",
+			"1.csv",
+			"2.csv",
 		},
 		{},
 		{},
