@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// ParsedCSVFile describes structure of parsed data gathered from CSV file.
 type ParsedCSVFile struct {
 	ColumnNames struct {
 		Date  string
@@ -40,6 +41,7 @@ func (pcf *ParsedCSVFile) EqualTo(other *ParsedCSVFile, valueCheckPredicate Floa
 	return nil
 }
 
+// TimeSeriesItem describes TimeSeries item gathered from CSV file.
 type TimeSeriesItem struct {
 	Date  time.Time
 	Value float64
