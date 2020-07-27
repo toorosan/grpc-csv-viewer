@@ -24,13 +24,14 @@ func (fl FileList) EqualTo(other FileList) error {
 }
 
 // ListFilesInDir implements a handy shortcut to list files in folder, filtering them by extension, if passed.
+// Returns list of base file names.
 func ListFilesInDir(rootPath, ext string) ([]string, error) {
 	var files []string
-	rootPathBase := filepath.Base(rootPath)
+	rootBasePath := filepath.Base(rootPath)
 	walkerFunc := func(file string, info os.FileInfo, err error) error {
-		filepath.Abs(file)
-		if (ext == "" || filepath.Ext(file) == ext) && (filepath.Base(file) != rootPathBase) {
-			files = append(files, file)
+		fileBasePath := filepath.Base(file)
+		if (ext == "" || filepath.Ext(file) == ext) && (fileBasePath != rootBasePath) {
+			files = append(files, fileBasePath)
 		}
 
 		return nil
