@@ -1,0 +1,10 @@
+FROM golang:1.13
+
+  # create project directory
+RUN mkdir -p src/github.com/toorosan/grpc-csv-viewer
+
+  # copy project files and folders to the current working directory
+COPY . src/github.com/toorosan/grpc-csv-viewer
+
+  # run application
+CMD cd src/github.com/toorosan/grpc-csv-viewer && go run cmd/server/main.go --port 8082

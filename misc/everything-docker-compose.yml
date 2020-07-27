@@ -1,5 +1,11 @@
 version: '3'
 services:
+  server:
+    build:
+      context: ..
+      dockerfile: ./misc/server-run-Dockerfile
+    ports:
+      - "8082:8082"
   ui:
     build:
       context: ../internal/app/roles/client/ui
@@ -12,6 +18,10 @@ services:
       dockerfile: ./misc/client-run-Dockerfile
     ports:
       - "8081:8081"
+    links:
+      - server:server
+    depends_on:
+      - server
   proxy:
     image: nginx:alpine
     links:
