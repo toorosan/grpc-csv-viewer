@@ -9,30 +9,38 @@ import (
 type LoggingLevel string
 
 const (
-	LevelDebug LoggingLevel = "debug"
-	LevelInfo  LoggingLevel = "info"
-	LevelWarn  LoggingLevel = "warn"
-	LevelError LoggingLevel = "fatal"
+	LevelInvalid LoggingLevel = "invalid level"
+	LevelDebug   LoggingLevel = "debug"
+	LevelInfo    LoggingLevel = "info"
+	LevelWarn    LoggingLevel = "warn"
+	LevelError   LoggingLevel = "fatal"
 )
 
 var loggingLevelToInt = map[LoggingLevel]int{
-	LevelDebug: 0,
-	LevelInfo:  1,
-	LevelWarn:  2,
-	LevelError: 3,
+	LevelDebug: 1,
+	LevelInfo:  2,
+	LevelWarn:  3,
+	LevelError: 4,
 }
 var loggingLevelArray = []LoggingLevel{
+	LevelInvalid, // stub item to validate proper logging level
 	LevelDebug,
 	LevelInfo,
 	LevelWarn,
 	LevelError,
 }
 
-var loggingLevel = 1
+// Default logging level is set to "Info".
+var loggingLevel = loggingLevelToInt[LevelInfo]
 
 // SetLevel configures logger level.
 func SetLevel(level LoggingLevel) {
+	if loggingLevelToInt[level] == 0 {
+		Fatalf("failed to configure logging level: unsupported logging level passed: %q. Supported logging levels: %q", level, validLoggingLevels())
+	}
 	loggingLevel = loggingLevelToInt[level]
+
+	Debugf("configured logging level to %q", level)
 }
 
 // GetLevel returns logger level.
@@ -95,4 +103,13 @@ func genericLogging(level LoggingLevel, message string, args ...interface{}) {
 		return
 	}
 	log.Printf(strings.ToUpper(string(level))+"\t"+message+"\n", args...)
+}
+
+func validLoggingLevels() []string {
+	result := make([]string, len(loggingLevelToInt))
+	for k, v := range loggingLevelToInt {
+		result[v-1] = string(k)
+	}
+
+	return result
 }
