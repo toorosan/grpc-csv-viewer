@@ -10,7 +10,7 @@ Prototype of gRPC service acquiring and serving data from CSV files as JSON form
 ## Run project
 #### Requirements: cmake + docker + docker-compose.
 #### To Run everything in docker containers:
-  ```make run```
+Put some `.csv` files with data formatted like in [this example](internal/pkg/csvreader/test_data/meterusage.csv) inside [misc/csv_files](misc/csv_files) dir and perform `make run` to serve them.
 - All components are working behing nginx on [http://127.0.0.1:8888](http://127.0.0.1:8888)
 - Pure WEB UI is running on [http://127.0.0.1:8080](http://127.0.0.1:8080)
 - gRPC Client is running on [http://127.0.0.1:8081](http://127.0.0.1:8081)
