@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"net"
 
 	pb "grpc-csv-viewer/internal/pkg/csvviewer"
@@ -16,17 +15,18 @@ import (
 func main() {
 	var (
 		csvFilesPath = flag.String("csv_files_path", "", "A path to the CSV files with TimeSeries.")
-		port         = flag.Int("port", 10000, "The server port")
-		logLevel     = flag.String("log_level", "info", "The server port")
+		listenAddr   = flag.String("listen_addr", ":8082", "The address to bind to listen for requests to gRPC Server in the format of host:port")
+		logLevel     = flag.String("log_level", "info", "Severity level filter for logging messages.")
 	)
 	flag.Parse()
 
 	logger.SetLevel(logger.LoggingLevel(*logLevel))
 
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", *port))
+	lis, err := net.Listen("tcp", *listenAddr)
 	if err != nil {
-		logger.Fatalf(errors.Wrapf(err, "failed to start listeninig gRPC requests on port %d", port).Error())
+		logger.Fatalf(errors.Wrapf(err, "failed to start listening gRPC requests on address %q", *listenAddr).Error())
 	}
+	logger.Infof("started listening for gRPC requests on address %q", *listenAddr)
 
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
