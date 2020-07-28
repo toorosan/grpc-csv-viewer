@@ -2,6 +2,7 @@ package logger
 
 import (
 	"log"
+	"os"
 	"strings"
 )
 
@@ -14,7 +15,8 @@ const (
 	LevelDebug   LoggingLevel = "debug"
 	LevelInfo    LoggingLevel = "info"
 	LevelWarn    LoggingLevel = "warn"
-	LevelError   LoggingLevel = "fatal"
+	LevelError   LoggingLevel = "error"
+	LevelFatal   LoggingLevel = "fatal"
 )
 
 var loggingLevelToInt = map[LoggingLevel]int{
@@ -22,6 +24,7 @@ var loggingLevelToInt = map[LoggingLevel]int{
 	LevelInfo:  2,
 	LevelWarn:  3,
 	LevelError: 4,
+	LevelFatal: 4,
 }
 var loggingLevelArray = []LoggingLevel{
 	LevelInvalid, // stub item to validate proper logging level
@@ -29,6 +32,7 @@ var loggingLevelArray = []LoggingLevel{
 	LevelInfo,
 	LevelWarn,
 	LevelError,
+	LevelFatal,
 }
 
 // Default logging level is set to "Info".
@@ -91,12 +95,14 @@ func Warnf(format string, args ...interface{}) {
 
 // Fatal logs a message at level Fatal + os.exit(1).
 func Fatal(message string, args ...interface{}) {
-	log.Fatal(append([]interface{}{message}, args...)...)
+	genericLogging(LevelFatal, message, args...)
+	os.Exit(1)
 }
 
 // Fatalf logs a message at level Fatal + os.exit(1).
 func Fatalf(format string, args ...interface{}) {
-	log.Fatalf(format, args...)
+	genericLogging(LevelFatal, format, args...)
+	os.Exit(1)
 }
 
 func genericLogging(level LoggingLevel, message string, args ...interface{}) {
