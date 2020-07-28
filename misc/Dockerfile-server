@@ -7,4 +7,4 @@ RUN mkdir -p src/github.com/toorosan/grpc-csv-viewer
 COPY . src/github.com/toorosan/grpc-csv-viewer
 
   # run application
-CMD cd src/github.com/toorosan/grpc-csv-viewer && go run cmd/server/main.go --port 8082
+CMD cd src/github.com/toorosan/grpc-csv-viewer && go run cmd/server/main.go -listen_addr ":8082" -csv_files_path misc/csv_files

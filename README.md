@@ -4,20 +4,20 @@ Prototype of gRPC service acquiring and serving data from CSV files as JSON form
 ## CI Status: <a href="https://github.com/toorosan/grpc-csv-viewer"><img alt="grpc-csv-viewer status" src="https://github.com/toorosan/grpc-csv-viewer/workflows/Go/badge.svg"></a> <a href="https://github.com/toorosan/grpc-csv-viewer"><img alt="grpc-csv-viewer status" src="https://github.com/toorosan/grpc-csv-viewer/workflows/golangci-lint/badge.svg"></a>
 
 ## API specifications
-- Client-side REST API: `raml/api.raml`
-- gRPC protocol definition:
+- Client-side REST API: [raml/api.raml](raml/api.raml)
+- gRPC protocol definition: [internal/pkg/csvviewer/csv_viewer.pb.go](internal/pkg/csvviewer/csv_viewer.pb.go)
 
 ## Run project
 #### Requirements: cmake + docker + docker-compose.
-#### Run everything in docker containers:
-  ```make run-everything```
-- All components are working behing nginx on http://127.0.0.1:8888
-- Pure WEB UI is running on http://127.0.0.1:8080
-- gRPC Client is running on http://127.0.0.1:8081
-- gRPC Server is running on http://127.0.0.1:8082
+#### To Run everything in docker containers:
+  ```make run```
+- All components are working behing nginx on [http://127.0.0.1:8888](http://127.0.0.1:8888)
+- Pure WEB UI is running on [http://127.0.0.1:8080](http://127.0.0.1:8080)
+- gRPC Client is running on [http://127.0.0.1:8081](http://127.0.0.1:8081)
+- gRPC Server is running on [http://127.0.0.1:8082](http://127.0.0.1:8082)
 
-#### Run with force rebuild docker images (convenient method after source files were updated):
-  ```make run-everything-rebuilt```
+#### To rebuild docker images and containers (convenient method after some source files were updated):
+  ```make rebuild```
 
 ## Initial project requirements:
 - Monorepo should contain the following components:

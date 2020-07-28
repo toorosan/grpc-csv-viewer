@@ -1,27 +1,27 @@
 version: '3'
 services:
+  client:
+    build:
+      context: ..
+      dockerfile: ./misc/Dockerfile-client
+    depends_on:
+      - server
+    links:
+      - server:server
+    ports:
+      - "8081:8081"
   server:
     build:
       context: ..
-      dockerfile: ./misc/server-run-Dockerfile
+      dockerfile: ./misc/Dockerfile-server
     ports:
       - "8082:8082"
   ui:
     build:
       context: ../internal/app/roles/client/ui
-      dockerfile: ../../../../../misc/ui-run-Dockerfile
+      dockerfile: ../../../../../misc/Dockerfile-ui
     ports:
       - "8080:8080"
-  client:
-    build:
-      context: ..
-      dockerfile: ./misc/client-run-Dockerfile
-    ports:
-      - "8081:8081"
-    links:
-      - server:server
-    depends_on:
-      - server
   proxy:
     image: nginx:alpine
     links:
@@ -30,7 +30,7 @@ services:
     ports:
       - "8888:80"
     volumes:
-      - ./nginx-dev-default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx-all-containers.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - client
       - ui
