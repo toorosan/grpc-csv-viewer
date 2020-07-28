@@ -1,0 +1,47 @@
+#%RAML 1.0
+title: gRPC Client API
+version: v1
+baseUri: http://localhost/api/{version}/
+mediaType: application/json
+
+traits:
+  errorInternal:
+    description: Internal error occurred.
+    responses:
+      500:
+  errorBadGateway:
+    description: Bad Gateway error occurred.
+    responses:
+      502:
+        body:
+          schema:
+            type: object
+            properties:
+              message: string
+
+types:
+  SeriesItem:
+    type: object
+    properties:
+      date: datetime
+      value:
+        type: number
+        format: float
+  TimeSeries:
+    type: object
+    properties:
+      fileName: string
+      startDate: datetime
+      stopDate: datetime
+      values:
+        type: array
+        items: SeriesItem
+
+/timeseries:
+  is: [ errorInternal, errorBadGateway ]
+  get:
+    description: "Get time series."
+    responses:
+      200:
+        body:
+          schema: TimeSeries
