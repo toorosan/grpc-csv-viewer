@@ -67,9 +67,6 @@ type csvServer struct {
 }
 
 func (s *csvServer) ListFiles(query *csvviewer.FilesQuery, stream csvviewer.CSVViewer_ListFilesServer) error {
-	if query == nil {
-		query = &csvviewer.FilesQuery{}
-	}
 	logger.Debugf("requested ListFiles")
 	for _, f := range s.availableCSVFilesList {
 		logger.Debugf("sending FileDetails %#v", f.FileDetails)

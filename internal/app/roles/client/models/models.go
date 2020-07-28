@@ -13,12 +13,31 @@ type SeriesItem struct {
 	Value float64   `json:"value"`
 }
 
+// FileDetails defines data structure to be replied to UI per request to list available files.
+type FileDetails struct {
+	FileName  string    `json:"fileName"`
+	StartDate time.Time `json:"startDate"`
+	StopDate  time.Time `json:"stopDate"`
+}
+
+// FileDetailsFromGRPC prepares UI-compatible FileDetails object from raw gRPC response.
+func FileDetailsFromGRPC(rawFiles []*csvviewer.FileDetails) []FileDetails {
+	fd := make([]FileDetails, len(rawFiles))
+	for i := range rawFiles {
+		fd[i] = FileDetails{
+			FileName:  rawFiles[i].FileName,
+			StartDate: time.Unix(rawFiles[i].StartDate, 0),
+			StopDate:  time.Unix(rawFiles[i].StopDate, 0),
+		}
+	}
+
+	return fd
+}
+
 // TimeSeries defines data structure to be replied to UI per TimeSeries request.
 type TimeSeries struct {
-	FileName  string       `json:"fileName"`
-	StartDate time.Time    `json:"startDate"`
-	StopDate  time.Time    `json:"stopDate"`
-	Values    []SeriesItem `json:"values"`
+	FileDetails
+	Values []SeriesItem `json:"values"`
 }
 
 // TimeSeriesFromRawValues prepares UI-compatible TimeSeries object from raw gRPC values.

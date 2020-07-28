@@ -1,7 +1,6 @@
 package client
 
 import (
-	"log"
 	"sync"
 	"time"
 
@@ -12,6 +11,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+// ConnectionConfig describes gRPC connection configuration.
 type ConnectionConfig struct {
 	// Global client connection configuration parameters.
 	// Defaults to 30 seconds.
@@ -64,7 +64,7 @@ func ConfigureConnectionParameters(cfg ConnectionConfig) error {
 	return ensureConnection()
 }
 
-// ListValues lists values from gRPC server.
+// ListValues gathers values from gRPC server.
 // ToDo: add proper values filter as input parameter.
 func ListValues() []*csvviewer.Value {
 	err := ensureConnection()
@@ -72,7 +72,7 @@ func ListValues() []*csvviewer.Value {
 		logger.Error(errors.Wrap(err, "failed to ensure grpc connection").Error())
 	}
 
-	var result []*csvviewer.Value
+	result := []*csvviewer.Value{}
 	for v := range listValues(client, &csvviewer.Filter{}) {
 		result = append(result, v)
 	}
@@ -80,16 +80,19 @@ func ListValues() []*csvviewer.Value {
 	return result
 }
 
-// PrintValues prints values from gRPC server.
-func PrintValues() {
+// ListFiles gathers details of CSV files available on gRPC server.
+func ListFiles() []*csvviewer.FileDetails {
 	err := ensureConnection()
 	if err != nil {
 		logger.Error(errors.Wrap(err, "failed to ensure grpc connection").Error())
 	}
 
-	for v := range listValues(client, &csvviewer.Filter{}) {
-		log.Println(v)
+	result := []*csvviewer.FileDetails{}
+	for v := range listFiles(client) {
+		result = append(result, v)
 	}
+
+	return result
 }
 
 // ensureConnection establishes temporary connection to the gRPC server.
@@ -98,7 +101,7 @@ func ensureConnection() error {
 	mut.Lock()
 	defer mut.Unlock()
 	if !enabled {
-		return errors.New("connection is not allowed as termination signal was received.")
+		return errors.New("connection is not allowed as termination signal was received")
 	}
 	lastCommunicationTime = time.Now()
 	if client != nil {

@@ -2,7 +2,6 @@ package rest
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"grpc-csv-viewer/internal/app/roles/client/models"
@@ -10,8 +9,10 @@ import (
 	"grpc-csv-viewer/internal/pkg/logger"
 )
 
-func uiHandler(w http.ResponseWriter, _ *http.Request) {
-	_, err := fmt.Fprintf(w, "Hi there, I am future ui handler!")
+func listFilesHandler(w http.ResponseWriter, _ *http.Request) {
+	rawFiles := client.ListFiles()
+
+	err := json.NewEncoder(w).Encode(models.FileDetailsFromGRPC(rawFiles))
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
@@ -27,6 +28,7 @@ func timeSeriesHandler(w http.ResponseWriter, _ *http.Request) {
 }
 
 func registerHandlers() {
-	http.HandleFunc("/api/v1/timeseries", timeSeriesHandler)
-	http.HandleFunc("/", uiHandler)
+	v1BasePath := "/api/v1"
+	http.HandleFunc(v1BasePath+"/timeseries", timeSeriesHandler)
+	http.HandleFunc(v1BasePath+"/files", listFilesHandler)
 }
