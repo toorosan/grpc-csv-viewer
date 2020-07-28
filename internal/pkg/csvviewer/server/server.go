@@ -69,6 +69,7 @@ func (s *csvServer) ListValues(filter *csvviewer.Filter, stream csvviewer.CSVVie
 	if filter == nil {
 		filter = &csvviewer.Filter{}
 	}
+	logger.Debugf("requested ListValues with the filter %#v", filter)
 	if filter.FileName == "" {
 		filter.FileName = s.defaultFileName
 	}
@@ -80,6 +81,7 @@ func (s *csvServer) ListValues(filter *csvviewer.Filter, stream csvviewer.CSVVie
 	}
 	for _, value := range s.csvValuesFromFile(filter.FileName) {
 		if inRange(value, filter) {
+			logger.Debugf("sending Value %#v", value)
 			err := stream.Send(value)
 			if err != nil {
 				return errors.Wrapf(err, "failed to send value %#v to the stream", value)
@@ -91,6 +93,7 @@ func (s *csvServer) ListValues(filter *csvviewer.Filter, stream csvviewer.CSVVie
 }
 
 func (s *csvServer) GetFileDetails(ctx context.Context, query *csvviewer.FileQuery) (*csvviewer.FileDetails, error) {
+	logger.Debugf("requested GetFileDetails with the query %#v", query)
 	if query.GetFileName() == "" {
 		return s.availableCSVFiles[s.defaultFileName].FileDetails, nil
 	}
@@ -112,10 +115,6 @@ func (s *csvServer) csvValuesFromFile(fileName string) []*csvviewer.Value {
 	}
 
 	return nil
-}
-
-func inRange(value *csvviewer.Value, filter *csvviewer.Filter) bool {
-	return value.Date < filter.StopDate && value.Date > filter.StartDate
 }
 
 func (s *csvServer) gatherFileDetails(baseFileName string) (*fileDetailsWithTimeSeries, error) {
@@ -148,4 +147,8 @@ func (s *csvServer) gatherFileDetails(baseFileName string) (*fileDetailsWithTime
 	}
 
 	return &fd, nil
+}
+
+func inRange(value *csvviewer.Value, filter *csvviewer.Filter) bool {
+	return value.Date < filter.StopDate && value.Date > filter.StartDate
 }
