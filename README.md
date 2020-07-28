@@ -19,6 +19,9 @@ Put some `.csv` files with data formatted like in [this example](internal/pkg/cs
 #### To rebuild docker images and containers (convenient method after some source files were updated):
   ```make rebuild```
 
+#### To regenerate protobuf interfaces:
+  ```make regen-protobuf```
+
 ## Initial project requirements:
 - Monorepo should contain the following components:
 - gRPC server, serving time-based numeric data from CSV files as TimeSeries.
