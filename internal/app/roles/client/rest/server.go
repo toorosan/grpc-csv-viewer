@@ -5,8 +5,8 @@ import (
 )
 
 // ListenAndServeREST initializes REST server handling UI requests.
-func ListenAndServeREST() error {
+func ListenAndServeREST(restListenAddr string) error {
 	registerHandlers()
 
-	return http.ListenAndServe(":8081", nil)
+	return http.ListenAndServe(restListenAddr, nil)
 }

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"grpc-csv-viewer/internal/app/roles/client/models"
+	"grpc-csv-viewer/internal/pkg/csvviewer/client"
 	"grpc-csv-viewer/internal/pkg/logger"
 )
 
@@ -16,8 +18,9 @@ func uiHandler(w http.ResponseWriter, _ *http.Request) {
 }
 
 func timeSeriesHandler(w http.ResponseWriter, _ *http.Request) {
-	mockTimeSeries := mockTimeSeries()
-	err := json.NewEncoder(w).Encode(mockTimeSeries)
+	rawTimeSeries := client.ListValues()
+
+	err := json.NewEncoder(w).Encode(models.TimeSeriesFromRawValues(rawTimeSeries))
 	if err != nil {
 		logger.Fatal(err.Error())
 	}
