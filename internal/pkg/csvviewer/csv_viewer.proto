@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/toorosan/grpc-csv-viewer/internal/pkg/csv_viewer";
+option go_package = ".;csvviewer";
 option java_multiple_files = true;
 option java_package = "io.toorosan.grpc.csvviewer";
 option java_outer_classname = "CSVViewerProto";
@@ -8,6 +8,12 @@ option java_outer_classname = "CSVViewerProto";
 package csv_viewer;
 
 service CSVViewer {
+  // Obtains the list of available CSV file names.  Results are
+  // streamed rather than returned at once (e.g. in a response message with a
+  // repeated field), as the time range may cover a huge time frame and contain a
+  // huge number of values.
+  rpc ListFiles(FilesQuery) returns (stream FileDetails) {}
+
   // Obtains the Values from CSV file by name within the given TimeRange.  Results are
   // streamed rather than returned at once (e.g. in a response message with a
   // repeated field), as the time range may cover a huge time frame and contain a
@@ -18,9 +24,12 @@ service CSVViewer {
   rpc GetFileDetails(FileQuery) returns (FileDetails) {}
 }
 
-// FileQuery is a message with file identifiers to get details about CSV file from server.
+// FilesQuery is a message with to get list of available CSV files.
+message FilesQuery {}
+
+// FileQuery is a message with file identifiers to get details about certain CSV file.
 message FileQuery {
-  // The name of the CSV file.
+  // The name of the CSV file. If empty, server will respond with some default file information.
   string fileName = 1;
 }
 

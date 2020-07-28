@@ -17,6 +17,7 @@ func NewCSVServer(csvFilesPath string) csvviewer.CSVViewerServer {
 	s := &csvServer{
 		csvFilesPath: csvFilesPath,
 	}
+	s.availableCSVFiles = map[string]*fileDetailsWithTimeSeries{}
 	if s.csvPathIsSet() {
 		csvFiles, err := pathwalker.ListFilesInDir(s.csvFilesPath, ".csv")
 		if err != nil {
@@ -31,9 +32,8 @@ func NewCSVServer(csvFilesPath string) csvviewer.CSVViewerServer {
 			if err != nil {
 				logger.Fatalf(errors.Wrapf(err, "failed to gather file %q details", f).Error())
 			}
-			s.availableCSVFiles = map[string]*fileDetailsWithTimeSeries{
-				fd.FileName: fd,
-			}
+			s.availableCSVFiles[fd.FileName] = fd
+			s.availableCSVFilesList = append(s.availableCSVFilesList, fd)
 		}
 	} else {
 		s.defaultFileName = mockedCSVFileName
@@ -60,9 +60,26 @@ type fileDetailsWithTimeSeries struct {
 }
 
 type csvServer struct {
-	availableCSVFiles map[string]*fileDetailsWithTimeSeries
-	csvFilesPath      string
-	defaultFileName   string
+	availableCSVFiles     map[string]*fileDetailsWithTimeSeries
+	availableCSVFilesList []*fileDetailsWithTimeSeries
+	csvFilesPath          string
+	defaultFileName       string
+}
+
+func (s *csvServer) ListFiles(query *csvviewer.FilesQuery, stream csvviewer.CSVViewer_ListFilesServer) error {
+	if query == nil {
+		query = &csvviewer.FilesQuery{}
+	}
+	logger.Debugf("requested ListFiles")
+	for _, f := range s.availableCSVFilesList {
+		logger.Debugf("sending FileDetails %#v", f.FileDetails)
+		err := stream.Send(f.FileDetails)
+		if err != nil {
+			return errors.Wrapf(err, "failed to send value %#v to the stream", f.FileDetails)
+		}
+	}
+
+	return nil
 }
 
 func (s *csvServer) ListValues(filter *csvviewer.Filter, stream csvviewer.CSVViewer_ListValuesServer) error {
