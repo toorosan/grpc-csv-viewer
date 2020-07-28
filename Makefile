@@ -4,6 +4,9 @@ linters:
 rebuild:
 	cd misc && docker-compose -f docker-compose-everything.yml build --force-rm
 
+regen-protobuf:
+	docker run -v `pwd`:/defs namely/protoc-all -f internal/pkg/csvviewer/csv_viewer.proto -l go -o internal/pkg/csvviewer
+
 run:
 	cd misc && docker-compose -f docker-compose-everything.yml up
 
