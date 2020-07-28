@@ -29,19 +29,19 @@ message FilesQuery {}
 
 // FileQuery is a message with file identifiers to get details about certain CSV file.
 message FileQuery {
-  // The name of the CSV file. If empty, server will respond with some default file information.
+  // Name of the CSV file. If empty, server will respond with some default file information.
   string fileName = 1;
 }
 
 // FileDetails is a message sent to get CSV file details.
 message FileDetails {
-  // The name of the CSV file.
+  // Name of the CSV file.
   string fileName = 1;
 
-  // The earliest date available in the original values list.
+  // Unix timestamp of the earliest date available in the original values list.
   int64 startDate = 2;
 
-  // The latest date available in the original values list.
+  // Unix timestamp of the latest date available in the original values list.
   int64 stopDate = 3;
 }
 

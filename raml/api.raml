@@ -20,6 +20,18 @@ traits:
               message: string
 
 types:
+  FileDetails:
+    type: object
+    properties:
+      fileName:
+        description: Name of the CSV file.
+        type: string
+      startDate:
+        description: Unix timestamp of the earliest date available in the original values list.
+        type: number
+      stopDate: Unix timestamp of the latest date available in the original values list.
+        description:
+        type: number
   SeriesItem:
     type: object
     properties:
@@ -28,11 +40,8 @@ types:
         type: number
         format: float
   TimeSeries:
-    type: object
+    type: FileDetails
     properties:
-      fileName: string
-      startDate: datetime
-      stopDate: datetime
       values:
         type: array
         items: SeriesItem
@@ -40,8 +49,18 @@ types:
 /timeseries:
   is: [ errorInternal, errorBadGateway ]
   get:
-    description: "Get time series."
+    description: Get time series.
     responses:
       200:
         body:
           schema: TimeSeries
+
+/files:
+  is: [ errorInternal, errorBadGateway ]
+  get:
+    description: Get list of available CSV files.
+    responses:
+      200:
+        body:
+          type: array
+          items: FileDetails

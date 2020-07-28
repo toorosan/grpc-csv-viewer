@@ -6,11 +6,12 @@ package csvviewer
 import (
 	context "context"
 	fmt "fmt"
+	math "math"
+
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -58,7 +59,7 @@ var xxx_messageInfo_FilesQuery proto.InternalMessageInfo
 
 // FileQuery is a message with file identifiers to get details about certain CSV file.
 type FileQuery struct {
-	// The name of the CSV file. If empty, server will respond with some default file information.
+	// Name of the CSV file. If empty, server will respond with some default file information.
 	FileName             string   `protobuf:"bytes,1,opt,name=fileName,proto3" json:"fileName,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -99,11 +100,11 @@ func (m *FileQuery) GetFileName() string {
 
 // FileDetails is a message sent to get CSV file details.
 type FileDetails struct {
-	// The name of the CSV file.
+	// Name of the CSV file.
 	FileName string `protobuf:"bytes,1,opt,name=fileName,proto3" json:"fileName,omitempty"`
-	// The earliest date available in the original values list.
+	// Unix timestamp of the earliest date available in the original values list.
 	StartDate int64 `protobuf:"varint,2,opt,name=startDate,proto3" json:"startDate,omitempty"`
-	// The latest date available in the original values list.
+	// Unix timestamp of the latest date available in the original values list.
 	StopDate             int64    `protobuf:"varint,3,opt,name=stopDate,proto3" json:"stopDate,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
