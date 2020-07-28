@@ -3,6 +3,10 @@ Prototype of gRPC service acquiring and serving data from CSV files as JSON form
 
 ## CI Status: <a href="https://github.com/toorosan/grpc-csv-viewer"><img alt="grpc-csv-viewer status" src="https://github.com/toorosan/grpc-csv-viewer/workflows/Go/badge.svg"></a> <a href="https://github.com/toorosan/grpc-csv-viewer"><img alt="grpc-csv-viewer status" src="https://github.com/toorosan/grpc-csv-viewer/workflows/golangci-lint/badge.svg"></a>
 
+## API specifications
+- Client-side REST API: `raml/api.raml`
+- gRPC protocol definition:
+
 ## Run project
 #### Requirements: cmake + docker + docker-compose.
 #### Run everything in docker containers:
@@ -15,7 +19,7 @@ Prototype of gRPC service acquiring and serving data from CSV files as JSON form
 #### Run with force rebuild docker images (convenient method after source files were updated):
   ```make run-everything-rebuilt```
 
-## Project Requirements:
+## Initial project requirements:
 - Monorepo should contain the following components:
 - gRPC server, serving time-based numeric data from CSV files as TimeSeries.
 - gRPC client, requesting TimeSeries from gRPC server and responding it as JSON.
