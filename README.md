@@ -7,6 +7,10 @@ Prototype of gRPC service acquiring and serving data from CSV files as JSON form
 - Client-side REST API: [raml/api.raml](raml/api.raml)
 - gRPC protocol definition: [internal/pkg/csvviewer/csv_viewer.pb.go](internal/pkg/csvviewer/csv_viewer.pb.go)
 
+## Development
+- All changes should be done in individual branches and then merged to master branch via pull request.
+- Before creating a pull request, please make sure `make lint` is successful for the code in question.
+
 ## Run project
 #### Requirements: cmake + docker + docker-compose.
 #### To Run everything in docker containers:
