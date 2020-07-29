@@ -15,7 +15,8 @@
     "axios": "^0.19.2",
     "chart.js": "^2.9.3",
     "vue": "^2.5.2",
-    "vue-chartjs": "^3.5.0"
+    "vue-chartjs": "^3.5.0",
+    "vuejs2-datepicker": "^2.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

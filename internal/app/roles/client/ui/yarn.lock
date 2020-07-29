@@ -7404,6 +7404,11 @@ vue@^2.5.2:
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.11.tgz#76594d877d4b12234406e84e35275c6d514125c5"
   integrity sha512-VfPwgcGABbGAue9+sfrD4PuwFar7gPb1yl1UK1MwXoQPAw0BKSqWfoYCT/ThFrdEVWoI51dBuyCoiNU9bZDZxQ==
 
+vuejs2-datepicker@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/vuejs2-datepicker/-/vuejs2-datepicker-2.0.0.tgz#5affb4937523d0883e6e697a44fee96fb04461a9"
+  integrity sha512-hQJs66tYW1k7MMKNvU336HANOEqQK5HGKtFoDbTmMFsPAcmJQh4KumIIo9gDtLmRgZmyrWQtNUWyieHWoE8vDQ==
+
 watchpack-chokidar2@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/watchpack-chokidar2/-/watchpack-chokidar2-2.0.0.tgz#9948a1866cbbd6cb824dea13a7ed691f6c8ddff0"
