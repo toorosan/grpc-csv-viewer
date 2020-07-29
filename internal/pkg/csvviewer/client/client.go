@@ -135,7 +135,7 @@ func ensureConnection() error {
 		// Define ticker to check connection idle status every 1 second.
 		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
-		logger.Infof("initiating communication channel healthcheck loop", connectionConfig.ServerAddr)
+		logger.Infof("initiating healthcheck loop for communication channel with server %q", connectionConfig.ServerAddr)
 		for {
 			select {
 			case <-*connectionConfig.TerminationChan:
