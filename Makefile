@@ -1,5 +1,5 @@
 lint:
-	docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.28.0 golangci-lint run -v
+	docker run --rm -v `pwd`:/app -w /app golangci/golangci-lint:v1.28.0 golangci-lint run -v --timeout 5m
 
 rebuild:
 	cd misc && docker-compose -f docker-compose-everything.yml build --force-rm
