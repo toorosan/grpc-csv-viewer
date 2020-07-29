@@ -39,17 +39,31 @@
         }
       }
     },
-    mounted () {
+    mounted: function () {
+      let bgGradient = this.$refs.canvas.getContext('2d').createLinearGradient(0, 0, 0, 450)
+      bgGradient.addColorStop(0, 'rgba(80,4,4,0.75)')
+      bgGradient.addColorStop(0.4, 'rgba(156,0,0,0.75)')
+      bgGradient.addColorStop(1, 'rgba(255,255,255,0.9)')
+      let lineGradient = this.$refs.canvas.getContext('2d').createLinearGradient(0, 0, 0, 450)
+      lineGradient.addColorStop(0, 'rgba(80,4,4, 0.8)')
+      lineGradient.addColorStop(0.4, 'rgba(156,0,0,0.8)')
+      lineGradient.addColorStop(1, 'rgba(255,255,255,1)')
       this.renderChart({
         labels: this.chartLabels,
         datasets: [
           {
             label: 'value',
-            borderColor: '#249EBF',
-            pointBackgroundColor: 'white',
+            borderColor: lineGradient,
+            pointBorderColor: lineGradient,
+            pointBackgroundColor: lineGradient,
+            pointHoverBackgroundColor: lineGradient,
+            pointHoverBorderColor: lineGradient,
+            pointBorderWidth: 2,
+            pointHoverRadius: 2,
+            pointHoverBorderWidth: 5,
+            pointRadius: 1,
             borderWidth: 1,
-            pointBorderColor: '#249EBF',
-            backgroundColor: 'transparent',
+            backgroundColor: bgGradient,
             data: this.chartData
           }
         ]
