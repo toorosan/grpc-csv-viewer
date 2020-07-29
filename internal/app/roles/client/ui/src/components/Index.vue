@@ -1,10 +1,12 @@
 <script>
   import axios from 'axios'
+  import Datepicker from 'vuejs2-datepicker'
   import LineChart from '@/components/LineChart'
   export default {
     name: "IndexPage",
     components: {
-      LineChart
+      LineChart,
+      Datepicker
     },
     props: {},
     data () {
@@ -19,10 +21,7 @@
         showError: false,
         startDate: '',
         stopDate: '',
-        loaded: false,
         values: [],
-        labels: [],
-        showError: false,
       }
     },
     created () {
@@ -101,8 +100,8 @@
       },
       requestData (force) {
         if (force === true) {
-          this.periodStart = ""
-          this.periodStop = ""
+          this.periodStart = ''
+          this.periodStop = ''
         }
         this.resetState()
         axios.get('/api/v1/timeseries', {params: this.filter()})
@@ -110,11 +109,16 @@
             console.log(response.data)
             this.values = response.data.values.map(value => value.value)
             this.labels = response.data.values.map(value => this.reformatDate(value.date))
-            this.fileName = response.data.fileName
             this.startDate = this.reformatDate(response.data.startDate)
             this.stopDate = this.reformatDate(response.data.stopDate)
             this.loading = false
             this.valuesLoaded = true
+            if (this.periodStart === '') {
+              this.periodStart = response.data.startDate
+            }
+            if (this.periodStop === '') {
+              this.periodStop = response.data.stopDate
+            }
           })
           .catch(err => {
             this.processError(err)
