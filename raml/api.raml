@@ -50,6 +50,19 @@ types:
   is: [ errorInternal, errorBadGateway ]
   get:
     description: Get time series.
+    queryParameters:
+      dateStart?:
+        description: "Unix timestamp to filter values later than certain date."
+        type: number
+        example: 1595065115
+      dateStop?:
+        description: "Unix timestamp to filter values earlier than certain date."
+        type: number
+        example: 1595965115
+      fileName?:
+        description: "CSV file name to get values from. If is not passed, the very first file from list will be used."
+        type: string
+        example: "timeSeries.csv"
     responses:
       200:
         body:
