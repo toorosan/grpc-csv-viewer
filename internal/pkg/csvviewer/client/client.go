@@ -65,15 +65,14 @@ func ConfigureConnectionParameters(cfg ConnectionConfig) error {
 }
 
 // ListValues gathers values from gRPC server.
-// ToDo: add proper values filter as input parameter.
-func ListValues() []*csvviewer.Value {
+func ListValues(filter *csvviewer.Filter) []*csvviewer.Value {
 	err := ensureConnection()
 	if err != nil {
 		logger.Error(errors.Wrap(err, "failed to ensure grpc connection").Error())
 	}
 
 	result := []*csvviewer.Value{}
-	for v := range listValues(client, &csvviewer.Filter{}) {
+	for v := range listValues(client, filter) {
 		result = append(result, v)
 	}
 

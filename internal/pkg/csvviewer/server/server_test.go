@@ -23,7 +23,7 @@ func TestNewCSVServerNoConfig(t *testing.T) {
 	if s.availableCSVFiles[mockedCSVFileName].FileName != mockedCSVFileName {
 		t.Fatalf("failed to verify only mocked cvs file is configured")
 	}
-	minDate := int64(9999999999)
+	minDate := int64(99999999999)
 	maxDate := int64(-1)
 	for _, v := range mockedValuesCache {
 		if v.Date < minDate {
@@ -33,7 +33,7 @@ func TestNewCSVServerNoConfig(t *testing.T) {
 			maxDate = v.Date
 		}
 	}
-	if s.defaultFileName != mockedCSVFileName {
+	if s.firstFileName != mockedCSVFileName {
 		t.Fatalf("failed to verify mocked cvs file is set as default one if no other files are configured")
 	}
 	if s.availableCSVFiles[mockedCSVFileName].StartDate != minDate {
@@ -84,7 +84,7 @@ func TestNewCSVServerConfiguredRealCSVFiles(t *testing.T) {
 	if s.availableCSVFiles[expectedFileName].FileName != expectedFileName {
 		t.Fatalf("failed to verify real cvs file is configured properly")
 	}
-	if s.defaultFileName != expectedFileName {
+	if s.firstFileName != expectedFileName {
 		t.Fatalf("failed to verify real cvs file is set as default one if no other files are configured")
 	}
 	// Check file `test_data/3.csv` for more details about the following 3 validations below:

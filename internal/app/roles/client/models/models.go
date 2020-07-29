@@ -43,9 +43,19 @@ type TimeSeries struct {
 // TimeSeriesFromRawValues prepares UI-compatible TimeSeries object from raw gRPC values.
 func TimeSeriesFromRawValues(values []*csvviewer.Value) TimeSeries {
 	ts := TimeSeries{
-		Values: make([]SeriesItem, len(values)),
+		FileDetails: FileDetails{},
+		Values:      make([]SeriesItem, len(values)),
 	}
+	minDate := int64(99999999999)
+	maxDate := int64(-1)
 	for i := range values {
+		d := values[i].Date
+		if d < minDate {
+			minDate = d
+		}
+		if d > maxDate {
+			maxDate = d
+		}
 		// NaN and Inf values processing.
 		// ToDo: check if we can skip them at all, as those values look like broken ones.
 		v := values[i].Value
@@ -60,6 +70,8 @@ func TimeSeriesFromRawValues(values []*csvviewer.Value) TimeSeries {
 			Value: v,
 		}
 	}
+	ts.StartDate = time.Unix(minDate, 0)
+	ts.StopDate = time.Unix(maxDate, 0)
 
 	return ts
 }

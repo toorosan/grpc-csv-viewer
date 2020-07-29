@@ -26,7 +26,7 @@ func NewCSVServer(csvFilesPath string) csvviewer.CSVViewerServer {
 		if len(csvFiles) == 0 {
 			logger.Fatalf("failed to initialize server: no suitable csv files found in directory %q", s.csvFilesPath)
 		}
-		s.defaultFileName = csvFiles[0]
+		s.firstFileName = csvFiles[0]
 		for _, f := range csvFiles {
 			fd, err := s.gatherFileDetails(f)
 			if err != nil {
@@ -36,7 +36,7 @@ func NewCSVServer(csvFilesPath string) csvviewer.CSVViewerServer {
 			s.availableCSVFilesList = append(s.availableCSVFilesList, fd)
 		}
 	} else {
-		s.defaultFileName = mockedCSVFileName
+		s.firstFileName = mockedCSVFileName
 		fd, err := s.gatherFileDetails("")
 		if err != nil {
 			logger.Fatalf(errors.Wrapf(err, "failed to gather file %q details", mockedCSVFileName).Error())
@@ -63,7 +63,7 @@ type csvServer struct {
 	availableCSVFiles     map[string]*fileDetailsWithTimeSeries
 	availableCSVFilesList []*fileDetailsWithTimeSeries
 	csvFilesPath          string
-	defaultFileName       string
+	firstFileName         string
 }
 
 func (s *csvServer) ListFiles(query *csvviewer.FilesQuery, stream csvviewer.CSVViewer_ListFilesServer) error {
@@ -85,13 +85,13 @@ func (s *csvServer) ListValues(filter *csvviewer.Filter, stream csvviewer.CSVVie
 	}
 	logger.Debugf("requested ListValues with the filter %#v", filter)
 	if filter.FileName == "" {
-		filter.FileName = s.defaultFileName
+		filter.FileName = s.firstFileName
 	}
 	if filter.StartDate == 0 {
-		filter.StartDate = s.availableCSVFiles[s.defaultFileName].StartDate
+		filter.StartDate = s.availableCSVFiles[s.firstFileName].StartDate
 	}
 	if filter.StopDate == 0 {
-		filter.StopDate = s.availableCSVFiles[s.defaultFileName].StopDate
+		filter.StopDate = s.availableCSVFiles[s.firstFileName].StopDate
 	}
 	for _, value := range s.csvValuesFromFile(filter.FileName) {
 		if inRange(value, filter) {
@@ -109,7 +109,7 @@ func (s *csvServer) ListValues(filter *csvviewer.Filter, stream csvviewer.CSVVie
 func (s *csvServer) GetFileDetails(ctx context.Context, query *csvviewer.FileQuery) (*csvviewer.FileDetails, error) {
 	logger.Debugf("requested GetFileDetails with the query %#v", query)
 	if query.GetFileName() == "" {
-		return s.availableCSVFiles[s.defaultFileName].FileDetails, nil
+		return s.availableCSVFiles[s.firstFileName].FileDetails, nil
 	}
 
 	if s.availableCSVFiles[query.GetFileName()] != nil {
@@ -135,7 +135,7 @@ func (s *csvServer) gatherFileDetails(baseFileName string) (*fileDetailsWithTime
 	fd := fileDetailsWithTimeSeries{
 		FileDetails: &csvviewer.FileDetails{
 			FileName:  baseFileName,
-			StartDate: 9999999999,
+			StartDate: 99999999999,
 			StopDate:  -1,
 		},
 	}
