@@ -161,6 +161,10 @@
   .files {
     float: left;
   }
+  .dates {
+    float: left;
+    margin-left: 50px;
+  }
 </style>
 
 <template>
@@ -197,6 +201,15 @@
               </a>
             </li>
           </ul>
+        </div>
+        <div class="dates">
+          <h2>Filter source values by date:</h2>
+          <label for="start-date" v-text="'Start Date'"></label>
+          <datepicker placeholder="Start Date" v-model="periodStart" id="start-date"></datepicker>
+          <label for="stop-date" v-text="'Stop Date'"></label>
+          <datepicker placeholder="Stop Date" v-model="periodStop" id="stop-date"></datepicker>
+          <button title="Apply filter" @click="requestData()">Apply filter</button>
+          <button title="Clear filter" @click="requestData(true)">Clear filter</button>
         </div>
       </div>
     </div>
