@@ -16,12 +16,12 @@ services:
       dockerfile: ./misc/Dockerfile-server
     ports:
       - "8082:8082"
+    volumes:
+      - $CSV_FOLDER:/go/src/github.com/toorosan/grpc-csv-viewer/misc/csv_files
   ui:
     build:
       context: ../internal/app/roles/client/ui
       dockerfile: ../../../../../misc/Dockerfile-ui
-    ports:
-      - "8080:8080"
   proxy:
     image: nginx:alpine
     links:
