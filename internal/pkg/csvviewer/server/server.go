@@ -88,10 +88,10 @@ func (s *csvServer) ListValues(filter *csvviewer.Filter, stream csvviewer.CSVVie
 		filter.FileName = s.firstFileName
 	}
 	if filter.StartDate == 0 {
-		filter.StartDate = s.availableCSVFiles[s.firstFileName].StartDate
+		filter.StartDate = s.availableCSVFiles[filter.FileName].StartDate
 	}
 	if filter.StopDate == 0 {
-		filter.StopDate = s.availableCSVFiles[s.firstFileName].StopDate
+		filter.StopDate = s.availableCSVFiles[filter.FileName].StopDate
 	}
 	for _, value := range s.csvValuesFromFile(filter.FileName) {
 		if inRange(value, filter) {

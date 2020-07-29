@@ -110,7 +110,7 @@ func ensureConnection() error {
 	threadWaitGroup.Add(1)
 	go func() {
 		var opts []grpc.DialOption
-		opts = append(opts, grpc.WithInsecure()) // todo: drop once TLS will be enabled
+		opts = append(opts, grpc.WithInsecure()) // ToDo: drop once TLS will be enabled per #23
 		opts = append(opts, grpc.WithBlock())
 		conn, err := grpc.Dial(connectionConfig.ServerAddr, opts...)
 		if err != nil {
