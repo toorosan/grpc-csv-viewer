@@ -12,7 +12,7 @@ Prototype of gRPC service acquiring and serving data from CSV files as JSON form
 #### To Run everything in docker containers:
 - Run `> make run` - to serve example `.csv` files from [misc/csv_files](misc/csv_files) dir.
 - To define specific directory with `.csv` files, secify it in environment variable `CSV_FOLDER`.
-E.g. `> CCSV_FOLDER="../internal/pkg/csvreader/test_data/" make run`
+<br>E.g. `> CCSV_FOLDER="../internal/pkg/csvreader/test_data/" make run`
 - When all components will be started, check UI on [http://127.0.0.1:8888](http://127.0.0.1:8888)
 <br><a href="misc/ui-example.png"><img alt="UI example" title="UI example" src="misc/ui-example.png" width="250"></a>
 ##### Notes about Docker environment organization:
@@ -20,7 +20,7 @@ E.g. `> CCSV_FOLDER="../internal/pkg/csvreader/test_data/" make run`
 - gRPC Client is running on [http://127.0.0.1:8081](http://127.0.0.1:8081)
 - gRPC Server is running on [http://127.0.0.1:8082](http://127.0.0.1:8082)
 - Inter-service rRPC communications are working inside Docker isolated network.
-So both ports above are exposed only for development and debugging purposes
+<br>So both ports above are exposed only for development and debugging purposes
 
 
 ## Development
