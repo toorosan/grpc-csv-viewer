@@ -11,7 +11,7 @@ Prototype of gRPC service acquiring and serving data from CSV files as JSON form
 #### Requirements: cmake + docker + docker-compose.
 #### To Run everything in docker containers:
 - Run `> make run` - to serve example `.csv` files from [misc/csv_files](misc/csv_files) dir.
-- To define specific directory with `.csv` files, secify it in environment variable `CSV_FOLDER`.
+- To define specific directory with `.csv` files, specify it in environment variable `CSV_FOLDER`.
 <br>E.g. `> CCSV_FOLDER="../internal/pkg/csvreader/test_data/" make run`
 - When all components will be started, check UI on [http://127.0.0.1:8888](http://127.0.0.1:8888)
 <br><a href="misc/ui-example.png"><img alt="UI example" title="UI example" src="misc/ui-example.png" width="250"></a>
@@ -40,7 +40,7 @@ Prototype of gRPC service acquiring and serving data from CSV files as JSON form
 - gRPC client, requesting TimeSeries from gRPC server and responding it as JSON.
 - Single page WEB application, requesting gRPC client and drawing chart based on TimeSeries.
 
-## Basic sequense diagram:
+## Basic sequence diagram:
 ![](misc/req-sequence.svg)
 <details>
   <summary>UML sources</summary>
